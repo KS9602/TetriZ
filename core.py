@@ -2,6 +2,7 @@ import pygame as pg
 import json
 from sys import exit
 from random import choice
+import requests 
 
 from figure import SquareBlock,SBlock,ZBlock,LBlock,JBlock,IBlock,TBlock
 from board import Board
@@ -83,7 +84,7 @@ class Game:
 
             if self.start_stop_flag != 1 and self.game_over_flag == 0:
                 self.delta_fall  += self.clock.tick() / 1000
-                while self.delta_fall > 1.0 and self.game_over_flag == 0:
+                while self.delta_fall > 0.5 and self.game_over_flag == 0:
 
                     self.player.add_log(Game.board.board)
                     if 1 not in Game.board.board:
@@ -165,13 +166,7 @@ class Game:
         Game.board.draw_falling(cords)
         self.delta_fall = 0.0
 
-    def api_send(self):
 
-        """placeholder for future api system."""
-    
-        pack = {'player':self.player.nick,'score':str(self.player.score),'log':self.player.log}
-        json_object = json.dumps(pack)
-        
    
 
 if __name__ == '__main__':
