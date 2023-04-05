@@ -1,24 +1,30 @@
-
-
-
-
 class Player:
 
-    def __init__(self,nick):
+    """ Simple player class. Contains logger :)"""
 
-        self.nick = 'nick'
+    def __init__(self):
+
+        self._nick = 'nick'
         self.score = 0
         self.log = ''
-    # @property
-    # def score(self):
-    #     return self.score
-    # @score.setter
-    # def score(self,points):
-    #     self._score = self._score + points
-    # @score.getter
-    # def score(self):
-    #     return self._score
 
+    def _clear(self):
+        self._score = 0
+        self.log = ''
+
+    @property
+    def nick(self):
+        return self._nick
+    @nick.getter
+    def nick(self):
+        return self._nick
+    @nick.setter
+    def nick(self,value): 
+
+        if isinstance(value,str):
+            self._nick = value
+        else:
+            raise TypeError 
 
     def add_log(self,board):
 

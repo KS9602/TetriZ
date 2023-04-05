@@ -1,7 +1,11 @@
 class Figure:
 
-    def falling(self):
+    """Figure is parent class for all type of blocks. Contain methods which are responsible for moving and changing block.
+    All method checks condition of 'move' and if it's true, return new possition, else return old possition.
+    Child classes contains unique id and color. Object of child class contains 4x shape attributes with possition x,y and
+    the box which is list of all shape attributes. Additionaly child classes contains change shape method """
 
+    def falling(self):
 
         for i in self.box:
             if i[0] == 20:
@@ -12,7 +16,6 @@ class Figure:
                 return self.box
 
         return self.box    
-
 
     def move_down(self,board):
 
@@ -27,7 +30,6 @@ class Figure:
             j[0] = j[0] + 1
         return self.box       
         
-
     def move_left(self,board):
 
         for i in self.box:
@@ -40,7 +42,6 @@ class Figure:
 
     def move_right(self,board):
 
-
         for i in self.box:
             if board[i[0],i[1] + 1] not in (0,1):   
                 return self.box
@@ -49,7 +50,6 @@ class Figure:
             j[1] = j[1] + 1
         return self.box
     
-
     def pivot(self,base,board,possition):
         for i in base:
             if board[i[0],i[1]] not in (0,1) :
@@ -60,7 +60,6 @@ class Figure:
         self.box,old_base = base,self.box
         figure = [self.box,old_base]
         return figure
-
 
 class SquareBlock(Figure):
 
@@ -142,7 +141,6 @@ class LBlock(Figure):
         self.box = [self.shape_1,self.shape_2,self.shape_3,self.shape_4] 
         self.possition = 'up'
 
-
     def change_shape(self,board):
 
         base = self.box.copy()
@@ -177,7 +175,6 @@ class JBlock(Figure):
         self.box = [self.shape_1,self.shape_2,self.shape_3,self.shape_4] 
         self.possition = 'up'
 
-
     def change_shape(self,board):
 
         base = self.box.copy()
@@ -190,8 +187,6 @@ class JBlock(Figure):
         if self.possition == 'right':
             base[0],base[2],base[3] = [pivot[0],pivot[1]+1], [pivot[0],pivot[1]-1], [pivot[0]-1,pivot[1]-1]
             return self.pivot(base=base,board=board,possition=self.possition)
-        
-
 
         if self.possition == 'down':
             base[0],base[2],base[3] = [pivot[0]-1,pivot[1]], [pivot[0]+1,pivot[1]], [pivot[0]-1,pivot[1]+1]
@@ -239,7 +234,6 @@ class TBlock(Figure):
         self.box = [self.shape_1,self.shape_2,self.shape_3,self.shape_4] 
         self.possition = 'up'
 
-
     def change_shape(self,board):
 
         base = self.box.copy()
@@ -253,8 +247,6 @@ class TBlock(Figure):
             base[0],base[2],base[3] = [pivot[0],pivot[1]+1], [pivot[0],pivot[1]-1], [pivot[0]-1,pivot[1]]
             return self.pivot(base=base,board=board,possition=self.possition)
         
-
-
         if self.possition == 'down':
             base[0],base[2],base[3] = [pivot[0]+1,pivot[1]], [pivot[0]-1,pivot[1]], [pivot[0],pivot[1]+1]
             return self.pivot(base=base,board=board,possition=self.possition)

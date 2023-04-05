@@ -1,38 +1,52 @@
 import pygame as pg
 import json
 from sys import exit
+from random import choice
+
 from figure import SquareBlock,SBlock,ZBlock,LBlock,JBlock,IBlock,TBlock
 from board import Board
-from random import choice
 from player import Player
 
-
 class Game:
+
+    """TetriZ main class. Class attributes create board object, blocks class list, vectors and rectangle objects"""
 
     board = Board()
     BLOCKS = [SquareBlock,SBlock,ZBlock,LBlock,JBlock,IBlock,TBlock]
 
-    vec_menu = pg.math.Vector2(390,1)
-    MENU = pg.Rect(vec_menu.x,vec_menu.y,320,640) 
-    START_BUTTON = pg.Rect(vec_menu.x + 10,vec_menu.y + 10,300,54)
-    RESTART = pg.Rect(vec_menu.x + 10, vec_menu.y + 80, 300,54)
-    SCORE = pg.Rect(vec_menu.x + 10, vec_menu.y + 140, 300,60)
-    PLAYER = pg.Rect(vec_menu.x + 10, vec_menu.y + 210, 300,44)
+    GAME_VEC = pg.math.Vector2(100,100)
+    VECTOR_MENU = pg.math.Vector2(390,1)
+    MENU = pg.Rect(VECTOR_MENU.x,VECTOR_MENU.y,320,640) 
+    START_BUTTON = pg.Rect(VECTOR_MENU.x + 10,VECTOR_MENU.y + 10,300,54)
+    RESTART = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 80, 300,54)
+    SCORE = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 140, 300,60)
+    PLAYER = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 210, 300,44)
     PLAYER_COLOR = {1:(70,150,111),2:(190,22,200)}
     
-
     def __init__(self):
+
+        """Init create basic pygame objects, player object, flags and starts game main loop.
+        Loop contains control system (keyboard and mouse), second loop and methods that draw graphic.
+        The second loop run evry second if game isn't stopped/over. Loop runs logger method and checked
+        whether '1' is on board, which means falling block is in game. If not, program choice class from class
+        attribute and create new figure object(else figure is falling). 
+        Then board is checked whether at the 'zero' point is space required
+        for draw block. If not, game is over, else figure starts falling  """
+
         pg.init()
         pg.display.set_caption('TetriZ')
         self.window = pg.display.set_mode((720,650))
+        self.player = Player()
+
         self.clock = pg.time.Clock()
         self.delta_fall = 0.0
-        self.start_stop_flag = 1
-        self.color_flag = 1
-        self.player = Player('')
-        self.game_over = 0
+
         self.font = pg.font.Font(None,80)
         self.nick_font = pg.font.Font(None,40)
+
+        self.game_over_flag = 0
+        self.start_stop_flag = 1
+        self.color_flag = 1
 
         while True:
             pos = pg.mouse.get_pos()
@@ -41,13 +55,13 @@ class Game:
                     if event.type == pg.QUIT: 
                         pg.quit()
                         exit() 
-                    if event.type == pg.KEYDOWN and event.key == pg.K_LEFT and self.game_over == 0:
+                    if event.type == pg.KEYDOWN and event.key == pg.K_LEFT and self.start_stop_flag == 2 and self.game_over_flag == 0:
                         Game.board.draw_move_left(self.figure.move_left(Game.board.board))
-                    if event.type == pg.KEYDOWN and event.key == pg.K_RIGHT and self.game_over == 0:
+                    if event.type == pg.KEYDOWN and event.key == pg.K_RIGHT and self.start_stop_flag == 2 and self.game_over_flag == 0:
                         Game.board.draw_move_right(self.figure.move_right(Game.board.board))   
-                    if event.type == pg.KEYDOWN and event.key == pg.K_UP and self.game_over == 0:
+                    if event.type == pg.KEYDOWN and event.key == pg.K_UP and self.start_stop_flag == 2 and self.game_over_flag == 0:
                         Game.board.draw_change(self.figure.change_shape(Game.board.board)) 
-                    if event.type == pg.KEYDOWN and event.key == pg.K_DOWN and self.game_over == 0:
+                    if event.type == pg.KEYDOWN and event.key == pg.K_DOWN and self.start_stop_flag == 2 and self.game_over_flag == 0:
                         Game.board.draw_move_down(self.figure.move_down(Game.board.board))
                     if event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and Game.START_BUTTON.collidepoint(pos):
                         self.start_stop_flag = self.start_stop_flag % 2 + 1
@@ -56,8 +70,8 @@ class Game:
                     if event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and Game.RESTART.collidepoint(pos):
                         self.start_stop_flag = 1
                         Game.board = Board()
-                        self.player.score = 0
-                        self.player.log = ''
+                        self.player._clear()
+                        self.figure = None
                     if event.type == pg.KEYDOWN :
                         if event.key == pg.K_BACKSPACE:
                             self.player.nick = self.player.nick[:-1]
@@ -67,18 +81,18 @@ class Game:
                 except (UnboundLocalError,AttributeError):
                     pass
 
-            if self.start_stop_flag != 1 and self.game_over == 0:
+            if self.start_stop_flag != 1 and self.game_over_flag == 0:
                 self.delta_fall  += self.clock.tick() / 1000
-                while self.delta_fall > 0.5 and self.game_over == 0:
-                    self.player.add_log(Game.board.board)
+                while self.delta_fall > 1.0 and self.game_over_flag == 0:
 
+                    self.player.add_log(Game.board.board)
                     if 1 not in Game.board.board:
                         block = choice(Game.BLOCKS)
                         self.figure = block()
 
                         for i in self.figure.box:
                             if Game.board.board[i[0]+1,i[1]] not in (0,1) :
-                                self.game_over = 1                      # gameover
+                                self.game_over_flag = 1                      # gameover
                                 self.api_send()
 
                         for i in self.figure.box:
@@ -89,20 +103,21 @@ class Game:
                         cords = self.figure.falling()
                         Game.fall_checking(self,cords=cords)
 
-            self.drow_boxes()
+            self.draw_boxes()
             self.draw_menu()
             pg.display.flip()
 
-    def drow_boxes(self):
-        """rysuje bloki. 1 = zamrozone bloki 2 = lecace blocki 0 = przestrzec 9 = ramka"""
-        vec = pg.math.Vector2(100,100)
+    def draw_boxes(self):
+        """Draw boxes mathod based on board object. 0 - empyt space, 1 - falling figure ,
+          2-8 individual color of figure, 9 - frame"""
 
         for row_en,row in enumerate(self.board.board):
             for pos_en,i in enumerate(row):
 
-                vec.x = 32 * pos_en
-                vec.y = 32 * row_en
-                rect = pg.Rect(vec.x,vec.y,30,30)
+                Game.GAME_VEC.x = 32 * pos_en
+                Game.GAME_VEC.y = 32 * row_en
+                rect = pg.Rect(Game.GAME_VEC.x,Game.GAME_VEC.y,30,30)
+
                 if i == 1:                            
                     pg.draw.rect(self.window,self.figure.color,rect,0,5)
                 elif i == 9:
@@ -138,9 +153,11 @@ class Game:
     def fall_checking(self,cords):
         """ metoda do sprawdzenia czy klocek moze dalej opadac. jesli po klockiem jest 1 to znaczy ze ma sie zatrzymac.
             jesli w rzedzie sa same jedynki odpala sie funkcja ktora czysci wiersz"""
+        """ Fall_checking method checks whether figure can continue to fall (if block below is not fall figure or free space,
+        it cant). Then figure is freezed and if blocks create line on all row, row disapear. """
 
         for i in cords:
-            if Game.board.board[i[0]+1,i[1]] not in (0,1):
+            if Game.board.board[i[0] + 1,i[1]] not in (0,1):
                 Game.board.freez_figure(cords,self.figure.block_id)
                 Game.board.one_line_disapear(self.player)
                 return 
@@ -148,11 +165,13 @@ class Game:
         Game.board.draw_falling(cords)
         self.delta_fall = 0.0
 
-
     def api_send(self):
-        
+
+        """placeholder for future api system."""
+    
         pack = {'player':self.player.nick,'score':str(self.player.score),'log':self.player.log}
         json_object = json.dumps(pack)
+        
    
 
 if __name__ == '__main__':
