@@ -60,9 +60,11 @@ class Board:
  
         for e,row in enumerate(self.board):
             if 0 not in row and row[5] != 9:
+                self.board[0,1:-1] = 0
                 box_above = self.board[:e]
                 new_above = np.concatenate((self.new_row,box_above))          ## sprawdzic czy mozna self.board[:e+1] = np.concatenate((self.new_row,box_above))  
                 self.board[:e+1] = new_above
+                self.board[0,1:-1] = 9
                 player.score += 100
                 
 
