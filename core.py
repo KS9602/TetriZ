@@ -2,6 +2,7 @@ import pygame as pg
 import json
 from sys import exit
 from random import choice
+import requests
 
 from figure import SquareBlock,SBlock,ZBlock,LBlock,JBlock,IBlock,TBlock
 from board import Board
@@ -21,6 +22,7 @@ class Game:
     RESTART = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 80, 300,54)
     SCORE = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 140, 300,60)
     PLAYER = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 210, 300,44)
+    SEND = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 290, 300,44)
     PLAYER_COLOR = {1:(70,150,111),2:(190,22,200)}
     
     def __init__(self):
@@ -47,6 +49,7 @@ class Game:
         self.game_over_flag = 0
         self.start_stop_flag = 1
         self.color_flag = 1
+        self.api_flag = 0
 
         while True:
             pos = pg.mouse.get_pos()
@@ -78,12 +81,16 @@ class Game:
                         else:
                             if len(self.player.nick) < 19:
                                 self.player.nick += event.unicode
+                    if event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and Game.SEND.collidepoint(pos) and self.api_flag == 1:
+                        self.api_send()
+                        self.api_flag = 0
+
                 except (UnboundLocalError,AttributeError):
                     pass
 
             if self.start_stop_flag != 1 and self.game_over_flag == 0:
                 self.delta_fall  += self.clock.tick() / 1000
-                while self.delta_fall > 1.0 and self.game_over_flag == 0:
+                while self.delta_fall > 0.5 and self.game_over_flag == 0:
 
                     self.player.add_log(Game.board.board)
                     if 1 not in Game.board.board:
@@ -93,7 +100,7 @@ class Game:
                         for i in self.figure.box:
                             if Game.board.board[i[0]+1,i[1]] not in (0,1) :
                                 self.game_over_flag = 1                      # gameover
-                                self.api_send()
+                                self.api_flag = 1
 
                         for i in self.figure.box:
                             Game.board.board[i[0],i[1]] = 1
@@ -136,19 +143,20 @@ class Game:
         pg.draw.rect(self.window,Game.PLAYER_COLOR[self.color_flag],Game.PLAYER,0)
         pg.draw.rect(self.window,(200,100,200),Game.SCORE,0)
         pg.draw.rect(self.window,(250,80,120),Game.RESTART,0)
+        pg.draw.rect(self.window,(250,80,120),Game.SEND,0)
         status = {1:'    START',2:'    STOP'}
-
 
         surface_start_stop = self.font.render(f'{status[self.start_stop_flag]}',True,'white')
         surface_score = self.font.render(f'P: {self.player.score}',True,'white')
         surface_restart = self.font.render('RESTART',True,'white')
+        nick_surface = self.nick_font.render(self.player.nick,True,(255,255,255))
+        surface_send = self.nick_font.render('wyslij wynik',True,'white')
 
         self.window.blit(surface_start_stop,(Game.START_BUTTON))
         self.window.blit(surface_score,(Game.SCORE))
         self.window.blit(surface_restart,(Game.RESTART))
-
-        nick_surface = self.nick_font.render(self.player.nick,True,(255,255,255))
-        self.window.blit(nick_surface,Game.PLAYER)
+        self.window.blit(surface_send,(Game.SEND))
+        self.window.blit(nick_surface,(Game.PLAYER))
 
     def fall_checking(self,cords):
         """ metoda do sprawdzenia czy klocek moze dalej opadac. jesli po klockiem jest 1 to znaczy ze ma sie zatrzymac.
@@ -167,11 +175,9 @@ class Game:
 
     def api_send(self):
 
-        """placeholder for future api system."""
-    
-        pack = {'player':self.player.nick,'score':str(self.player.score),'log':self.player.log}
+        pack = [self.player.nick,str(self.player.score),self.player.log]
         json_object = json.dumps(pack)
-        
+        requests.post('http://127.0.0.1:8000/tetriz/get_log/',json=json_object)
    
 
 if __name__ == '__main__':
