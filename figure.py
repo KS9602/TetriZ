@@ -5,17 +5,15 @@ class Figure:
     Child classes contains unique id and color. Object of child class contains 4x shape attributes with possition x,y and
     the box which is list of all shape attributes. Additionaly child classes contains change shape method """
 
-    def falling(self):
+    def falling(self,board):
 
         for i in self.box:
-            if i[0] == 20:
-                break
+            if board[i[0],i[1]] not in (0,1):
+                return self.box 
             else:
                 for j in self.box:
                     j[0] = j[0] +1
                 return self.box
-
-        return self.box    
 
     def move_down(self,board):
 

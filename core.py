@@ -90,7 +90,7 @@ class Game:
 
             if self.start_stop_flag != 1 and self.game_over_flag == 0:
                 self.delta_fall  += self.clock.tick() / 1000
-                while self.delta_fall > 0.5 and self.game_over_flag == 0:
+                while self.delta_fall > 0.25 and self.game_over_flag == 0:
 
                     self.player.add_log(Game.board.board)
                     if 1 not in Game.board.board:
@@ -107,7 +107,7 @@ class Game:
                         self.delta_fall = 0.0
                         self.player.score += 10
                     else :
-                        cords = self.figure.falling()
+                        cords = self.figure.falling(Game.board.board)
                         Game.fall_checking(self,cords=cords)
 
             self.draw_boxes()
@@ -159,13 +159,11 @@ class Game:
         self.window.blit(nick_surface,(Game.PLAYER))
 
     def fall_checking(self,cords):
-        """ metoda do sprawdzenia czy klocek moze dalej opadac. jesli po klockiem jest 1 to znaczy ze ma sie zatrzymac.
-            jesli w rzedzie sa same jedynki odpala sie funkcja ktora czysci wiersz"""
         """ Fall_checking method checks whether figure can continue to fall (if block below is not fall figure or free space,
         it cant). Then figure is freezed and if blocks create line on all row, row disapear. """
 
         for i in cords:
-            if Game.board.board[i[0] + 1,i[1]] not in (0,1):
+            if Game.board.board[i[0],i[1]] not in (0,1):
                 Game.board.freez_figure(cords,self.figure.block_id)
                 Game.board.one_line_disapear(self.player)
                 return 
@@ -173,12 +171,9 @@ class Game:
         Game.board.draw_falling(cords)
         self.delta_fall = 0.0
 
-    def api_send(self):
-
-        pack = [self.player.nick,str(self.player.score),self.player.log]
-        json_object = json.dumps(pack)
-        requests.post('http://127.0.0.1:8000/tetriz/get_log/',json=json_object)
-   
+    def send_log():
+        """placeholder"""
+        pass
 
 if __name__ == '__main__':
     Game()

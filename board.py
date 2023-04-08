@@ -20,32 +20,33 @@ class Board:
             self.board[i[0] -1,i[1]] = 0
         for i in figure:
             self.board[i[0],i[1]] = 1
-
+            
     def freez_figure(self,figure,block_id):
 
         for i in figure:
-            self.board[i[0] -1,i[1]] = 0
-        for i in figure:
-            self.board[i[0],i[1]] = block_id
+            self.board[i[0] -1,i[1]] = block_id
 
     def draw_move_left(self,figure):
 
         for i in figure:
-            self.board[i[0],i[1]+1] = 0
+            if self.board[i[0],i[1]+1] == 1:
+                self.board[i[0],i[1]+1] = 0
         for i in figure:
             self.board[i[0],i[1]] = 1
 
     def draw_move_right(self,figure):
 
         for i in figure:
-            self.board[i[0],i[1]-1] = 0
+                if self.board[i[0],i[1]-1] == 1:
+                    self.board[i[0],i[1]-1] = 0
         for i in figure:
             self.board[i[0],i[1]] = 1
 
     def draw_move_down(self,figure):
 
         for i in figure:
-            self.board[i[0]-1,i[1]] = 0
+            if self.board[i[0] -1,i[1]] == 1:
+                self.board[i[0]-1,i[1]] = 0
         for i in figure:
             self.board[i[0],i[1]] = 1
 
