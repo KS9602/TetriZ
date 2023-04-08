@@ -2,7 +2,6 @@ import pygame as pg
 import json
 from sys import exit
 from random import choice
-import requests
 
 from figure import SquareBlock,SBlock,ZBlock,LBlock,JBlock,IBlock,TBlock
 from board import Board
