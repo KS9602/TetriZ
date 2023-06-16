@@ -13,43 +13,7 @@ class Board:
         self.board[0], self.board[-1], self.board[:, 0], self.board[:, -1] = 9, 9, 9, 9
         self.new_row = np.array([[0 for i in range(y)]])
         self.new_row[0][0], self.new_row[0][-1] = 9, 9
-
-    def clear_figuer(self,figure: list) -> None:
-        for i in figure:
-            self.board[i[0], i[1]] = 1
-
-    def draw_falling(self, figure: list) -> None:
-        for i in figure:
-            self.board[i[0] - 1, i[1]] = 0
-        self.clear_figuer(figure=figure)
-
-    def freez_figure(self, figure: list, block_id: int) -> None:
-        for i in figure:
-            self.board[i[0] - 1, i[1]] = block_id
-
-    def draw_move_left(self, figure: list) -> None:
-        for i in figure:
-            if self.board[i[0], i[1] + 1] == 1:
-                self.board[i[0], i[1] + 1] = 0
-        self.clear_figuer(figure=figure)
-
-    def draw_move_right(self, figure: list) -> None:
-        for i in figure:
-            if self.board[i[0], i[1] - 1] == 1:
-                self.board[i[0], i[1] - 1] = 0
-        self.clear_figuer(figure=figure)
-
-    def draw_move_down(self, figure: list) -> None:
-        for i in figure:
-            if self.board[i[0] - 1, i[1]] == 1:
-                self.board[i[0] - 1, i[1]] = 0
-        self.clear_figuer(figure=figure)
-
-    def draw_change(self, figure: list) -> None:
-        for i in figure[1]:
-            self.board[i[0], i[1]] = 0
-        for i in figure[0]:
-            self.board[i[0], i[1]] = 1
+        
 
     def one_line_disapear(self, player: Player) -> None:
         """This method is responsible for destroy row which if full of block 'boxes/numbers' (except two '9' of frames).
