@@ -2,10 +2,10 @@ import numpy as np
 
 class BoardLogger:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.full_log: str = ""
         self.current_log: str = ""
-        self.score = 0
+        self.score: int = 0
 
     def _clear(self) -> None:
         self._score = 0
