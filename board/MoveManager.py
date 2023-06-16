@@ -1,9 +1,9 @@
-
+from board import Board
 
 class MoveManager:
 
-    def __init__(self) -> None:
-        self.board = 'x'
+    def __init__(self, board: Board) -> None:
+        self.board = board
 
     def clear_figuer(self,figure: list) -> None:
         for i in figure:

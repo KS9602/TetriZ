@@ -9,7 +9,8 @@ from blocks.LBlock import LBlock
 from blocks.JBlock import JBlock
 from blocks.TBlock import TBlock
 from blocks.SquareBlock import SquareBlock
-from board import Board
+from board.Board import Board
+from board.MoveManager import MoveManager
 from player import Player
 from BoardLogger import BoardLogger
 
@@ -36,8 +37,10 @@ class Game:
         attribute and create new figure object(else figure is falling).
         Then board is checked whether at the 'zero' point is space required
         for draw block. If not, game is over, else figure starts falling"""
+
         pg.init()
         self.board = Board()
+        self.move_manager = MoveManager(board=self.board.board)
         self.BLOCKS = [SquareBlock, SBlock, ZBlock, LBlock, JBlock, IBlock, TBlock]
         pg.display.set_caption("TetriZ")
         self.window = pg.display.set_mode((720, 650))
@@ -64,28 +67,28 @@ class Game:
                     and self.start_stop_flag == 2
                     and self.game_over_flag == 0
                 ):
-                    self.board.draw_move_left(self.figure.move_left(self.board.board))
+                    self.move_manager.draw_move_left(self.figure.move_left(self.board.board))
                 if (
                     event.type == pg.KEYDOWN
                     and event.key == pg.K_RIGHT
                     and self.start_stop_flag == 2
                     and self.game_over_flag == 0
                 ):
-                    self.board.draw_move_right(self.figure.move_right(self.board.board))
+                    self.move_manager.draw_move_right(self.figure.move_right(self.board.board))
                 if (
                     event.type == pg.KEYDOWN
                     and event.key == pg.K_UP
                     and self.start_stop_flag == 2
                     and self.game_over_flag == 0
                 ):
-                    self.board.draw_change(self.figure.change_shape(self.board.board))
+                    self.move_manager.draw_change(self.figure.change_shape(self.board.board))
                 if (
                     event.type == pg.KEYDOWN
                     and event.key == pg.K_DOWN
                     and self.start_stop_flag == 2
                     and self.game_over_flag == 0
                 ):
-                    self.board.draw_move_down(self.figure.move_down(self.board.board))
+                    self.move_manager.draw_move_down(self.figure.move_down(self.board.board))
                 if (
                     event.type == pg.MOUSEBUTTONDOWN
                     and event.button == 1
@@ -189,11 +192,11 @@ class Game:
 
         for i in cords:
             if self.board.board[i[0], i[1]] not in (0, 1):
-                self.board.freez_figure(cords, self.figure.block_id)
+                self.move_manager.freez_figure(cords, self.figure.block_id)
                 self.board.one_line_disapear(self.player)
                 return
 
-        self.board.draw_falling(cords)
+        self.move_manager.draw_falling(cords)
         self.delta_fall = 0.0
 
 
