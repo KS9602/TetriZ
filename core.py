@@ -25,6 +25,10 @@ from constants import (
     PLAYER_COLOR ,
 )
 
+from DrawManager.DrawManager import DrawManager
+
+
+
 class Game:
 
     """TetriZ main class"""
@@ -38,7 +42,7 @@ class Game:
         Then board is checked whether at the 'zero' point is space required
         for draw block. If not, game is over, else figure starts falling"""
 
-        pg.init()
+        self.game_engine = pg.init()
         self.board = Board()
         self.move_manager = MoveManager(board=self.board.board)
         self.BLOCKS = [SquareBlock, SBlock, ZBlock, LBlock, JBlock, IBlock, TBlock]
@@ -53,7 +57,9 @@ class Game:
         self.game_over_flag = 0
         self.start_stop_flag = 1
         self.color_flag = 1
+        self.figure = None
 
+        self.draw_manager = DrawManager(window=self.window)
 
         while True:
             pos = pg.mouse.get_pos()
@@ -140,50 +146,69 @@ class Game:
                         cords = self.figure.falling(self.board.board)
                         Game.fall_checking(self, cords=cords)
 
-            self.draw_boxes()
-            self.draw_menu()
+            # self.draw_boxes()
+            # self.draw_menu()
+
+            self.draw_manager.draw_boxes(self.board.board,self.figure)
+            self.draw_manager.draw_menu(
+                color_flag=self.color_flag,
+                start_stop_flag=self.start_stop_flag,
+                player_nick = self.player.nick,
+                logger_score = self.logger.score
+                )
             pg.display.flip()
 
-    def draw_boxes(self) -> None:
-        """Draw boxes mathod based on board object. 0 - empyt space, 1 - falling figure ,
-        2-8 individual color of figure, 9 - frame"""
 
-        for row_en, row in enumerate(self.board.board):
-            for pos_en, i in enumerate(row):
-                GAME_VEC.x = 32 * pos_en
-                GAME_VEC.y = 32 * row_en
-                rect = pg.Rect(GAME_VEC.x, GAME_VEC.y, 30, 30)
 
-                if i == 1:
-                    pg.draw.rect(self.window, self.figure.color, rect, 0, 5)
-                elif i == 9:
-                    pg.draw.rect(self.window, (150, 0, 255), rect, 0, 5)
-                elif i == 0:
-                    pg.draw.rect(self.window, (255, 255, 255), rect, 0, 5)
-                else:
-                    for block in self.BLOCKS:
-                        if i == block.block_id:
-                            pg.draw.rect(self.window, block.color, rect, 0, 5)
 
-    def draw_menu(self) -> None:
-        pg.draw.rect(self.window, (200, 200, 200), MENU, 0)
-        pg.draw.rect(self.window, (100, 100, 200), START_BUTTON, 0)
-        pg.draw.rect(self.window, PLAYER_COLOR[self.color_flag], PLAYER, 0)
-        pg.draw.rect(self.window, (200, 100, 200), SCORE, 0)
-        pg.draw.rect(self.window, (250, 80, 120), RESTART, 0)
-        status = {1: "    START", 2: "    STOP"}
 
-        surface_start_stop = self.font.render(
-            f"{status[self.start_stop_flag]}", True, "white"
-        )
-        surface_score = self.font.render(f"P: {self.logger.score}", True, "white")
-        surface_restart = self.font.render("RESTART", True, "white")
-        nick_surface = self.nick_font.render(self.player.nick, True, (255, 255, 255))
 
-        self.window.blit(surface_start_stop, (START_BUTTON))
-        self.window.blit(surface_score, (SCORE))
-        self.window.blit(surface_restart, (RESTART))
-        self.window.blit(nick_surface, (PLAYER))
+
+
+
+
+
+
+    # def draw_boxes(self) -> None:
+    #     """Draw boxes mathod based on board object. 0 - empyt space, 1 - falling figure ,
+    #     2-8 individual color of figure, 9 - frame"""
+
+    #     for row_en, row in enumerate(self.board.board):
+    #         for pos_en, i in enumerate(row):
+    #             GAME_VEC.x = 32 * pos_en
+    #             GAME_VEC.y = 32 * row_en
+    #             rect = pg.Rect(GAME_VEC.x, GAME_VEC.y, 30, 30)
+
+    #             if i == 1:
+    #                 pg.draw.rect(self.window, self.figure.color, rect, 0, 5)
+    #             elif i == 9:
+    #                 pg.draw.rect(self.window, (150, 0, 255), rect, 0, 5)
+    #             elif i == 0:
+    #                 pg.draw.rect(self.window, (255, 255, 255), rect, 0, 5)
+    #             else:
+    #                 for block in self.BLOCKS:
+    #                     if i == block.block_id:
+    #                         pg.draw.rect(self.window, block.color, rect, 0, 5)
+
+    # def draw_menu(self) -> None:
+    #     pg.draw.rect(self.window, (200, 200, 200), MENU, 0)
+    #     pg.draw.rect(self.window, (100, 100, 200), START_BUTTON, 0)
+    #     pg.draw.rect(self.window, PLAYER_COLOR[self.color_flag], PLAYER, 0)
+    #     pg.draw.rect(self.window, (200, 100, 200), SCORE, 0)
+    #     pg.draw.rect(self.window, (250, 80, 120), RESTART, 0)
+    #     status = {1: "    START", 2: "    STOP"}
+
+    #     surface_start_stop = self.font.render(
+    #         f"{status[self.start_stop_flag]}", True, "white"
+    #     )
+    #     surface_score = self.font.render(f"P: {self.logger.score}", True, "white")
+    #     surface_restart = self.font.render("RESTART", True, "white")
+    #     nick_surface = self.nick_font.render(self.player.nick, True, (255, 255, 255))
+
+    #     self.window.blit(surface_start_stop, (START_BUTTON))
+    #     self.window.blit(surface_score, (SCORE))
+    #     self.window.blit(surface_restart, (RESTART))
+    #     self.window.blit(nick_surface, (PLAYER))
 
     def fall_checking(self, cords: list) -> None:
         """Fall_checking method checks whether figure can continue to fall (if block below is not fall figure or free space,
