@@ -167,3 +167,4 @@ Scripts/
 build/
 pyvenv.cfg
 .vscode
+ttest.py

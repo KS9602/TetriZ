@@ -1,12 +1,17 @@
 import pygame as pg
-import json
 from sys import exit
 from random import choice
-import requests
 
-from figure import SquareBlock, SBlock, ZBlock, LBlock, JBlock, IBlock, TBlock
+from blocks.IBlock import IBlock
+from blocks.SBlock import SBlock
+from blocks.ZBlock import ZBlock
+from blocks.LBlock import LBlock
+from blocks.JBlock import JBlock
+from blocks.TBlock import TBlock
+from blocks.SquareBlock import SquareBlock
 from board import Board
 from player import Player
+from BoardLogger import BoardLogger
 
 
 class Game:
@@ -23,7 +28,6 @@ class Game:
     RESTART = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 80, 300, 54)
     SCORE = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 140, 300, 60)
     PLAYER = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 210, 300, 44)
-    SEND = pg.Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 290, 300, 44)
     PLAYER_COLOR = {1: (70, 150, 111), 2: (190, 22, 200)}
 
     def __init__(self) -> None:
@@ -39,7 +43,7 @@ class Game:
         pg.display.set_caption("TetriZ")
         self.window = pg.display.set_mode((720, 650))
         self.player = Player()
-
+        self.logger = BoardLogger()
         self.clock = pg.time.Clock()
         self.delta_fall = 0.0
 
@@ -49,8 +53,7 @@ class Game:
         self.game_over_flag = 0
         self.start_stop_flag = 1
         self.color_flag = 1
-        self.api_flag = 0
-        self.live_room = 0
+
 
         while True:
             pos = pg.mouse.get_pos()
@@ -105,7 +108,7 @@ class Game:
                 ):
                     self.start_stop_flag = 1
                     Game.board = Board()
-                    self.player._clear()
+                    self.logger._clear()
                     self.figure = None
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_BACKSPACE:
@@ -113,20 +116,13 @@ class Game:
                     else:
                         if len(self.player.nick) < 19:
                             self.player.nick += event.unicode
-                if (
-                    event.type == pg.MOUSEBUTTONDOWN
-                    and event.button == 1
-                    and Game.SEND.collidepoint(pos)
-                    and self.api_flag == 1
-                ):
-                    self.api_send()
-                    self.api_flag = 0
+
+
 
             if self.start_stop_flag != 1 and self.game_over_flag == 0:
                 self.delta_fall += self.clock.tick() / 1000
                 while self.delta_fall > 0.25 and self.game_over_flag == 0:
-                    self.player.add_log(Game.board.board)
-                    # self.live()
+                    self.logger.add_log(Game.board.board)
                     if 1 not in Game.board.board:
                         block = choice(Game.BLOCKS)
                         self.figure = block()
@@ -134,12 +130,12 @@ class Game:
                         for i in self.figure.box:
                             if Game.board.board[i[0] + 1, i[1]] not in (0, 1):
                                 self.game_over_flag = 1  # gameover
-                                self.api_flag = 1
+
 
                         for i in self.figure.box:
                             Game.board.board[i[0], i[1]] = 1
                         self.delta_fall = 0.0
-                        self.player.score += 10
+                        self.logger.score += 10
                     else:
                         cords = self.figure.falling(Game.board.board)
                         Game.fall_checking(self, cords=cords)
@@ -175,21 +171,18 @@ class Game:
         pg.draw.rect(self.window, Game.PLAYER_COLOR[self.color_flag], Game.PLAYER, 0)
         pg.draw.rect(self.window, (200, 100, 200), Game.SCORE, 0)
         pg.draw.rect(self.window, (250, 80, 120), Game.RESTART, 0)
-        pg.draw.rect(self.window, (250, 80, 120), Game.SEND, 0)
         status = {1: "    START", 2: "    STOP"}
 
         surface_start_stop = self.font.render(
             f"{status[self.start_stop_flag]}", True, "white"
         )
-        surface_score = self.font.render(f"P: {self.player.score}", True, "white")
+        surface_score = self.font.render(f"P: {self.logger.score}", True, "white")
         surface_restart = self.font.render("RESTART", True, "white")
         nick_surface = self.nick_font.render(self.player.nick, True, (255, 255, 255))
-        surface_send = self.nick_font.render("wyslij wynik", True, "white")
 
         self.window.blit(surface_start_stop, (Game.START_BUTTON))
         self.window.blit(surface_score, (Game.SCORE))
         self.window.blit(surface_restart, (Game.RESTART))
-        self.window.blit(surface_send, (Game.SEND))
         self.window.blit(nick_surface, (Game.PLAYER))
 
     def fall_checking(self, cords: list) -> None:
@@ -206,26 +199,7 @@ class Game:
         Game.board.draw_falling(cords)
         self.delta_fall = 0.0
 
-    def api_send(self) -> None:
-        pack = {
-            "nick": self.player.nick,
-            "score": self.player.score,
-            "log": self.player.log[:-1],
-        }
-        url = "http://127.0.0.1:8000/tetriz/get_log/"
-        headers = {"Content-type": "application/json"}
-        requests.post(url=url, data=json.dumps(pack), headers=headers)
 
-    # def live(self):
-
-    #     if self.live_room == 0:
-    #         room_id = requests.get('http://127.0.0.1:8000/tetriz/create_room/')
-    #         self.live_room = room_id['room_id']
-
-    #     pack = {'nick':self.player.nick,'score':self.player.score,'log':self.player.current_log}
-    #     url = ''
-    #     headers = {'Content-type': 'application/json'}
-    #     requests.post(url=url,data=json.dumps(pack),headers=headers)
 
 
 if __name__ == "__main__":

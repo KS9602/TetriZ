@@ -1,4 +1,4 @@
-from Figure import Figure
+from .Figure import Figure
 from numpy import array
 
 class SquareBlock(Figure):
