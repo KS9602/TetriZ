@@ -7,7 +7,7 @@ class BoardLogger:
         self.current_log: str = ""
         self.score: int = 0
 
-    def _clear(self) -> None:
+    def clear(self) -> None:
         self._score = 0
         self.full_log = ""
         self.current_log = ""

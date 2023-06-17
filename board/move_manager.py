@@ -1,4 +1,4 @@
-from board import Board
+from board.board import Board
 
 class MoveManager:
 

@@ -19,4 +19,3 @@ class Player:
             self._nick = value
         else:
             raise TypeError
-

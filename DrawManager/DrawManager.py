@@ -1,7 +1,6 @@
 import pygame as pg
 from constants import (
     GAME_VEC,
-    VECTOR_MENU,
     MENU,
     START_BUTTON,
     RESTART,
@@ -58,7 +57,7 @@ class DrawManager:
         pg.draw.rect(self.window, PLAYER_COLOR[color_flag], PLAYER, 0)
         pg.draw.rect(self.window, (200, 100, 200), SCORE, 0)
         pg.draw.rect(self.window, (250, 80, 120), RESTART, 0)
-        status = {1: "    START", 2: "    STOP"}
+        status = {1: "START", 2: "STOP"}
 
         surface_start_stop = self.font.render(
             f"{status[start_stop_flag]}", True, "white"
