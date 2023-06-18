@@ -6,7 +6,7 @@ from constants import (
     RESTART,
     SCORE,
     PLAYER,
-    PLAYER_COLOR ,
+    PLAYER_COLOR,
 )
 
 from blocks.IBlock import IBlock
@@ -19,15 +19,13 @@ from blocks.SquareBlock import SquareBlock
 
 
 class DrawManager:
-    def __init__(self,window) -> None:
+    def __init__(self, window) -> None:
         self.window = window
         self.BLOCKS = [SquareBlock, SBlock, ZBlock, LBlock, JBlock, IBlock, TBlock]
         self.font = pg.font.Font(None, 80)
         self.nick_font = pg.font.Font(None, 40)
 
-
-
-    def draw_boxes(self,board,figure) -> None:
+    def draw_boxes(self, board, figure) -> None:
         """Draw boxes mathod based on board object. 0 - empyt space, 1 - falling figure ,
         2-8 individual color of figure, 9 - frame"""
 
@@ -48,10 +46,7 @@ class DrawManager:
                         if i == block.block_id:
                             pg.draw.rect(self.window, block.color, rect, 0, 5)
 
-
-
-
-    def draw_menu(self,color_flag,start_stop_flag,player_nick,logger_score) -> None:
+    def draw_menu(self, color_flag, start_stop_flag, player_nick, logger_score) -> None:
         pg.draw.rect(self.window, (200, 200, 200), MENU, 0)
         pg.draw.rect(self.window, (100, 100, 200), START_BUTTON, 0)
         pg.draw.rect(self.window, PLAYER_COLOR[color_flag], PLAYER, 0)

@@ -13,7 +13,6 @@ class Board:
         self.board[0], self.board[-1], self.board[:, 0], self.board[:, -1] = 9, 9, 9, 9
         self.new_row = np.array([[0 for i in range(y)]])
         self.new_row[0][0], self.new_row[0][-1] = 9, 9
-        
 
     def one_line_disapear(self, player: Player) -> None:
         """This method is responsible for destroy row which if full of block 'boxes/numbers' (except two '9' of frames).

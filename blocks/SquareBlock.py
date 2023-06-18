@@ -1,6 +1,7 @@
 from .Figure import Figure
 from numpy import array
 
+
 class SquareBlock(Figure):
     block_id = 2
     color = (231, 54, 27)

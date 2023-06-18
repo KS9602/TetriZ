@@ -1,7 +1,7 @@
 import numpy as np
 
-class BoardLogger:
 
+class BoardLogger:
     def __init__(self) -> None:
         self.full_log: str = ""
         self.current_log: str = ""

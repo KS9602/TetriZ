@@ -1,6 +1,7 @@
 from .Figure import Figure
 from numpy import array
 
+
 class IBlock(Figure):
     block_id = 3
     color = (99, 225, 211)

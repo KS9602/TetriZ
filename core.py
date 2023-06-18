@@ -15,6 +15,7 @@ from controller.event_manager import EventManager
 from draw_manager.draw_manager import DrawManager
 from game_engine.game_engine import GameEngine
 
+
 class Game:
 
     """TetriZ main class"""
@@ -52,22 +53,18 @@ class Game:
 
     def run(self):
         while True:
-            self.game_engine.start_stop_loop()
+            self.game_engine.main_loop()
             self.event_manager.check_event_type(pg.event.get())
-            self.draw_manager.draw_boxes(self.board.board,self.figure)
+            self.draw_manager.draw_boxes(self.board.board, self.figure)
             self.draw_manager.draw_menu(
                 color_flag=self.color_flag,
                 start_stop_flag=self.start_stop_flag,
-                player_nick = self.player.nick,
-                logger_score = self.logger.score
-                )
+                player_nick=self.player.nick,
+                logger_score=self.logger.score,
+            )
             pg.display.flip()
-
-
-
 
 
 if __name__ == "__main__":
     game = Game()
     game.run()
-

@@ -1,4 +1,4 @@
-from pygame import Vector2,Rect
+from pygame import Vector2, Rect
 
 
 GAME_VEC = Vector2(100, 100)
@@ -10,5 +10,3 @@ RESTART = Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 80, 300, 54)
 SCORE = Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 140, 300, 60)
 PLAYER = Rect(VECTOR_MENU.x + 10, VECTOR_MENU.y + 210, 300, 44)
 PLAYER_COLOR = {1: (70, 150, 111), 2: (190, 22, 200)}
-
-
