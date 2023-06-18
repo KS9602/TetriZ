@@ -2,6 +2,7 @@ import pygame as pg
 from controller.controller import Controller
 from constants import START_BUTTON, RESTART, PLAYER
 from board.board import Board
+from board.move_manager import MoveManager
 
 
 class MouseController(Controller):
@@ -25,9 +26,12 @@ class MouseController(Controller):
         elif RESTART.collidepoint(pos):
             self.game.start_stop_flag = 1
             self.game.game_over_glag = 0
+            self.game.logger.clear()
             self.game.board = Board()
             self.game.figure = None
             self.game.logger.clear()
+            self.game.move_manager = MoveManager(self.game.board.board)
+            self.game.game_engine.main_loop()
 
     def right_click(self):
         pass

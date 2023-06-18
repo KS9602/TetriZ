@@ -1,5 +1,5 @@
 import numpy as np
-from player import Player
+from player.player import Player
 
 
 class Board:
@@ -14,7 +14,7 @@ class Board:
         self.new_row = np.array([[0 for i in range(y)]])
         self.new_row[0][0], self.new_row[0][-1] = 9, 9
 
-    def one_line_disapear(self, player: Player) -> None:
+    def one_line_disapear(self, logger: Player) -> None:
         """This method is responsible for destroy row which if full of block 'boxes/numbers' (except two '9' of frames).
         When row is detected upper frame turns into clear row, method create copy of all rows above destroyed row, add
         new rows to copy and paste to board attribute (and gains 100 points :))."""
@@ -26,4 +26,4 @@ class Board:
                 new_above = np.concatenate((self.new_row, box_above))
                 self.board[: e + 1] = new_above
                 self.board[0, 1:-1] = 9
-                player.score += 100
+                logger.score += 100

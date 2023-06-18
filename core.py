@@ -9,8 +9,8 @@ from blocks.TBlock import TBlock
 from blocks.SquareBlock import SquareBlock
 from board.board import Board
 from board.move_manager import MoveManager
-from player import Player
-from board_logger import BoardLogger
+from player.player import Player
+from board_logger.board_logger import BoardLogger
 from controller.event_manager import EventManager
 from draw_manager.draw_manager import DrawManager
 from game_engine.game_engine import GameEngine
@@ -30,13 +30,10 @@ class Game:
         for draw block. If not, game is over, else figure starts falling"""
 
         self.game_engine = pg.init()
-        self.board = Board()
-        self.move_manager = MoveManager(board=self.board.board)
-        self.BLOCKS = [SquareBlock, SBlock, ZBlock, LBlock, JBlock, IBlock, TBlock]
+
         pg.display.set_caption("TetriZ")
         self.window = pg.display.set_mode((720, 650))
-        self.player = Player()
-        self.logger = BoardLogger()
+
         self.clock = pg.time.Clock()
         self.delta_fall = 0.0
         self.font = pg.font.Font(None, 80)
@@ -46,10 +43,14 @@ class Game:
         self.color_flag = 1
         self.figure = None
 
+        self.board = Board()
+        self.player = Player()
+        self.logger = BoardLogger()
+        self.BLOCKS = [SquareBlock, SBlock, ZBlock, LBlock, JBlock, IBlock, TBlock]
         self.draw_manager = DrawManager(window=self.window)
-
-        self.event_manager = EventManager(self)
-        self.game_engine = GameEngine(self)
+        self.move_manager = MoveManager(board=self.board.board)
+        self.event_manager = EventManager(game=self)
+        self.game_engine = GameEngine(game=self)
 
     def run(self):
         while True:

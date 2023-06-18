@@ -5,7 +5,7 @@ class GameEngine:
     def __init__(self, game) -> None:
         self.game = game
 
-    def main_loop(self):
+    def main_loop(self) -> None:
         """Main game loop"""
         self.game.delta_fall += self.game.clock.tick() / 1000
         while (
@@ -15,6 +15,7 @@ class GameEngine:
         ):
             self.game.logger.add_log(self.game.board.board)
             self.create_figure()
+            print("XXX")
 
     def create_figure(self) -> None:
         """Create new figure on bard or run falling function"""
@@ -51,7 +52,7 @@ class GameEngine:
         for i in cords:
             if self.game.board.board[i[0], i[1]] not in (0, 1):
                 self.game.move_manager.freez_figure(cords, self.game.figure.block_id)
-                self.game.board.one_line_disapear(self.game.player)
+                self.game.board.one_line_disapear(self.game.logger)
                 return
 
         self.game.move_manager.draw_falling(cords)
